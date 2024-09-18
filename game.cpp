@@ -63,8 +63,17 @@ void UpdateAllNebulae(AnimData nebulae[], const int sizeOfNebulae, const float n
     }
 }
 
+// Update Finish Line
+void UpdateFinishLine(float& finishLine, const AnimData* nebulae, int sizeOfNebulae) {
+    if (sizeOfNebulae > 0) {
+        // Example logic: Set finishLine to the x-position of the last nebula
+        finishLine = nebulae[sizeOfNebulae - 1].pos.x;
+    }
+    // Additional logic can be added here as per game design
+}
+
 // Draw Game Objects
-void DrawGame(const GameAssets& assets, const AnimData& scarfyData, const AnimData nebulae[], int nebulaCount, bool collision) {
+void DrawGame(const GameAssets& assets, const AnimData& scarfyData, const AnimData nebulae[], int nebulaCount, bool collision, const int windowDimensions[2]) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
@@ -99,26 +108,28 @@ void DrawGame(const GameAssets& assets, const AnimData& scarfyData, const AnimDa
         // Draw Scarfy
         DrawTextureRec(assets.scarfy.get(), scarfyData.rec, scarfyData.pos, WHITE);
     }
+    else {
+        // Draw Game Over Message
+        const char* gameOverText = "Game Over!";
+        int fontSize = 40;
+        int textWidth = MeasureText(gameOverText, fontSize);
+        int textX = (windowDimensions[0] / 2) - (textWidth / 2);
+        int textY = (windowDimensions[1] / 2) - (fontSize / 2);
+        DrawText(gameOverText, textX, textY, fontSize, RED);
 
-
+        // Draw Restart Prompt
+        const char* restartText = "Press R to Restart";
+        int restartFontSize = 20;
+        int restartTextWidth = MeasureText(restartText, restartFontSize);
+        int restartTextX = (windowDimensions[0] / 2) - (restartTextWidth / 2);
+        int restartTextY = textY + fontSize + 10;
+        DrawText(restartText, restartTextX, restartTextY, restartFontSize, BLACK);
+    }
 
     EndDrawing();
-}
-
-// Update the finish line based on the positions of the nebulae
-void UpdateFinishLine(float& finishLine, const AnimData nebulae[], int sizeOfNebulae) {
-    finishLine = nebulae[0].pos.x;
-    for (int i = 1; i < sizeOfNebulae; i++) {
-        if (nebulae[i].pos.x > finishLine) {
-            finishLine = nebulae[i].pos.x;
-        }
-    }
 }
 
 // Check if the Player is on the Ground
 bool isOnGround(const AnimData data, const int windowDimensions[2]) {
     return data.pos.y >= static_cast<float>(windowDimensions[1]) - data.rec.height;
 }
-
-
- 

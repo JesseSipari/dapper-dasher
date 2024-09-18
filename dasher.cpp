@@ -110,7 +110,36 @@ int main() {
             }
 
             // Render game with collision state
-            DrawGame(assets, scarfyData, nebulae, sizeOfNebulae, collision);
+            DrawGame(assets, scarfyData, nebulae, sizeOfNebulae, collision, windowDimensions);
+
+            if (collision && IsKeyPressed(KEY_R)) {
+                // Reset collision flag
+                collision = false;
+
+                // Reset Scarfy's position and animation
+                scarfyData.pos.y = static_cast<float>(windowDimensions[1]) - scarfyData.rec.height;
+                scarfyData.frame = 0;
+                scarfyData.runningTime = 0.0f;
+
+                // Reset velocity
+                velocity = 0.0f;
+
+                // Reset nebulae positions
+                for (int i = 0; i < sizeOfNebulae; i++) {
+                    nebulae[i].pos.x = static_cast<float>(windowDimensions[0]) + i * 300.0f;
+                    nebulae[i].pos.y = static_cast<float>(windowDimensions[1]) - nebulae[i].rec.height;
+                    nebulae[i].frame = 0;
+                    nebulae[i].runningTime = 0.0f;
+                }
+
+                // Reset layer positions
+                assets.background1_x = 0.0f;
+                assets.background2_x = assets.background1.get().width * 2.0f;
+                assets.midground1_x = 0.0f;
+                assets.midground2_x = assets.midground1.get().width * 2.0f;
+                assets.foreground1_x = 0.0f;
+                assets.foreground2_x = assets.foreground1.get().width * 2.0f;
+            }
         }
 
         CloseWindow();
