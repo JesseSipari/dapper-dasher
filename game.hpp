@@ -62,7 +62,7 @@ void UpdatePlayerAnimation(AnimData& data, const float deltaTime, const int wind
 void UpdatePlayer(AnimData& data, float& velocity, const float gravity, const float deltaTime, const float jumpVelocity, const int windowDimensions[2]);
 void UpdateNebulaAnimation(AnimData& data, const float deltaTime, const int sizeOfNebulae);
 void UpdateAllNebulae(AnimData nebulae[], const int sizeOfNebulae, const float nebulaVelocity, const float deltaTime);
-void DrawGame(const GameAssets& assets, const AnimData& scarfyData, const AnimData nebulae[], int nebulaCount);
+void DrawGame(const GameAssets& assets, const AnimData& scarfyData, const AnimData nebulae[], int nebulaCount, bool collision);
 bool isOnGround(const AnimData data, const int windowDimensions[2]);
 void UpdateFinishLine(float& finishLine, const AnimData nebulae[], int sizeOfNebulae);
 #endif // GAME_HPP

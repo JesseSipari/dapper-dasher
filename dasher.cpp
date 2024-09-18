@@ -12,6 +12,8 @@ int main() {
         const float nebulaVelocity = -400.0f; // Nebula X velocity (pixels/s)
         const float jumpVelocity = -600.0f; // Jump velocity (pixels/s)
         float velocity = 0.0f; // Player's vertical velocity
+        bool collision{}; // Collision flag
+
 
         // Initialize raylib window
         InitializeGame(windowDimensions);
@@ -40,6 +42,8 @@ int main() {
             nebulae[i].runningTime = 0.0f;
         }
 
+
+		
         float finishLine{ nebulae[sizeOfNebulae - 1].pos.x };
 
         
@@ -77,17 +81,36 @@ int main() {
                 assets.foreground2_x = assets.foreground1_x + assets.foreground1.get().width * 2;
             }
 
-            // Update game logic
-            UpdatePlayer(scarfyData, velocity, gravity, deltaTime, jumpVelocity, windowDimensions);
-            UpdatePlayerAnimation(scarfyData, deltaTime, windowDimensions);
-            UpdateAllNebulae(nebulae, sizeOfNebulae, nebulaVelocity, deltaTime);
+            // Update game logic only if no collision has occurred
+            if (!collision) {
+                UpdateAllNebulae(nebulae, sizeOfNebulae, nebulaVelocity, deltaTime);
+                UpdatePlayer(scarfyData, velocity, gravity, deltaTime, jumpVelocity, windowDimensions);
+                UpdatePlayerAnimation(scarfyData, deltaTime, windowDimensions);
+                UpdateFinishLine(finishLine, nebulae, sizeOfNebulae);
+            }
 
-            // Update finishLine
-            UpdateFinishLine(finishLine, nebulae, sizeOfNebulae);
+            // Check for collisions
+            collision = false;
+            for (AnimData& nebula : nebulae) {
+                float padding{ 50.0f };
+                Rectangle nebulaRect{
+                    nebula.pos.x + padding,
+                    nebula.pos.y + padding,
+                    nebula.rec.width - 2 * padding,
+                    nebula.rec.height - 2 * padding };
+                Rectangle scarfyRect{
+                    scarfyData.pos.x,
+                    scarfyData.pos.y,
+                    scarfyData.rec.width,
+                    scarfyData.rec.height };
+                if (CheckCollisionRecs(nebulaRect, scarfyRect)) {
+                    collision = true;
+                    break;
+                }
+            }
 
-
-            // Render game
-            DrawGame(assets, scarfyData, nebulae, sizeOfNebulae);
+            // Render game with collision state
+            DrawGame(assets, scarfyData, nebulae, sizeOfNebulae, collision);
         }
 
         CloseWindow();

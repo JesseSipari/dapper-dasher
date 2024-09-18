@@ -64,7 +64,7 @@ void UpdateAllNebulae(AnimData nebulae[], const int sizeOfNebulae, const float n
 }
 
 // Draw Game Objects
-void DrawGame(const GameAssets& assets, const AnimData& scarfyData, const AnimData nebulae[], int nebulaCount) {
+void DrawGame(const GameAssets& assets, const AnimData& scarfyData, const AnimData nebulae[], int nebulaCount, bool collision) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
@@ -88,14 +88,19 @@ void DrawGame(const GameAssets& assets, const AnimData& scarfyData, const AnimDa
     DrawTextureEx(assets.foreground1.get(), foregroundPos1, 0.0f, scale, WHITE);
     DrawTextureEx(assets.foreground2.get(), foregroundPos2, 0.0f, scale, WHITE);
 
-    // Draw Nebulae
-    for (int i = 0; i < nebulaCount; i++) {
-        Color nebulaColor = (i % 2 == 0) ? WHITE : RED;
-        DrawTextureRec(assets.nebula.get(), nebulae[i].rec, nebulae[i].pos, nebulaColor);
+    // Conditionally Draw Nebulae and Scarfy
+    if (!collision) {
+        // Draw Nebulae
+        for (int i = 0; i < nebulaCount; i++) {
+            Color nebulaColor = (i % 2 == 0) ? WHITE : RED;
+            DrawTextureRec(assets.nebula.get(), nebulae[i].rec, nebulae[i].pos, nebulaColor);
+        }
+
+        // Draw Scarfy
+        DrawTextureRec(assets.scarfy.get(), scarfyData.rec, scarfyData.pos, WHITE);
     }
 
-    // Draw Scarfy
-    DrawTextureRec(assets.scarfy.get(), scarfyData.rec, scarfyData.pos, WHITE);
+
 
     EndDrawing();
 }
@@ -114,3 +119,6 @@ void UpdateFinishLine(float& finishLine, const AnimData nebulae[], int sizeOfNeb
 bool isOnGround(const AnimData data, const int windowDimensions[2]) {
     return data.pos.y >= static_cast<float>(windowDimensions[1]) - data.rec.height;
 }
+
+
+ 
