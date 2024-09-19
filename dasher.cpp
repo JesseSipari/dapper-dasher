@@ -1,5 +1,6 @@
 // dasher.cpp
 
+
 #include "game.hpp"
 #include "raylib.h"
 #include <iostream>
@@ -13,7 +14,7 @@ int main() {
         const float jumpVelocity = -600.0f; // Jump velocity (pixels/s)
         float velocity = 0.0f; // Player's vertical velocity
         bool collision{}; // Collision flag
-
+        bool hasWon = false; // Win flag
 
         // Initialize raylib window
         InitializeGame(windowDimensions);
@@ -31,7 +32,7 @@ int main() {
         };
 
         // Nebulae Setup
-        const int sizeOfNebulae = 6;
+        const int sizeOfNebulae = 1; // Increased number of nebulae
         AnimData nebulae[sizeOfNebulae];
 
         for (int i = 0; i < sizeOfNebulae; i++) {
@@ -42,11 +43,9 @@ int main() {
             nebulae[i].runningTime = 0.0f;
         }
 
+        // Define finishLine as a fixed x-coordinate
+        float finishLine = scarfyData.pos.x;
 
-		
-        float finishLine{ nebulae[sizeOfNebulae - 1].pos.x };
-
-        
         // Main Game Loop
         while (!WindowShouldClose()) {
             float deltaTime = GetFrameTime();
@@ -81,8 +80,8 @@ int main() {
                 assets.foreground2_x = assets.foreground1_x + assets.foreground1.get().width * 2;
             }
 
-            // Update game logic only if no collision has occurred
-            if (!collision) {
+            // Update game logic only if no collision has occurred and not yet won
+            if (!collision && !hasWon) {
                 UpdateAllNebulae(nebulae, sizeOfNebulae, nebulaVelocity, deltaTime);
                 UpdatePlayer(scarfyData, velocity, gravity, deltaTime, jumpVelocity, windowDimensions);
                 UpdatePlayerAnimation(scarfyData, deltaTime, windowDimensions);
@@ -109,12 +108,39 @@ int main() {
                 }
             }
 
+            // Determine if all nebulae have passed the finishLine
+            bool allNebulaePassed = true;
+            for (int i = 0; i < sizeOfNebulae; i++) {
+                if (nebulae[i].pos.x + nebulae[i].rec.width > finishLine) {
+                    allNebulaePassed = false;
+                    break;
+                }
+            }
+
+            if (allNebulaePassed && !hasWon) {
+                hasWon = true;
+            }
+
             // Render game with collision state
             DrawGame(assets, scarfyData, nebulae, sizeOfNebulae, collision, windowDimensions);
 
-            if (collision && IsKeyPressed(KEY_R)) {
-                // Reset collision flag
+            // Update win flag
+            if (allNebulaePassed && !hasWon) {
+                hasWon = true;
+            }
+
+            // Check for win condition and draw "YOU WIN!" message
+            if (hasWon) {
+                DrawText("YOU WIN!", windowDimensions[0] / 2 - 40, windowDimensions[1] / 2 - 10, 20, RED);
+                // TODO: Add additional logic for win state / fix DrawText
+
+            }
+
+            // Handle Restart Logic
+            if ((collision || hasWon) && IsKeyPressed(KEY_R)) {
+                // Reset collision and win flags
                 collision = false;
+                hasWon = false;
 
                 // Reset Scarfy's position and animation
                 scarfyData.pos.y = static_cast<float>(windowDimensions[1]) - scarfyData.rec.height;
@@ -139,7 +165,12 @@ int main() {
                 assets.midground2_x = assets.midground1.get().width * 2.0f;
                 assets.foreground1_x = 0.0f;
                 assets.foreground2_x = assets.foreground1.get().width * 2.0f;
+
+                // Reset finishLine
+                finishLine = scarfyData.pos.x + 100.0f; // Reinitialize finishLine
             }
+
+
         }
 
         CloseWindow();

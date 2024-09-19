@@ -65,11 +65,8 @@ void UpdateAllNebulae(AnimData nebulae[], const int sizeOfNebulae, const float n
 
 // Update Finish Line
 void UpdateFinishLine(float& finishLine, const AnimData* nebulae, int sizeOfNebulae) {
-    if (sizeOfNebulae > 0) {
-        // Example logic: Set finishLine to the x-position of the last nebula
-        finishLine = nebulae[sizeOfNebulae - 1].pos.x;
-    }
-    // Additional logic can be added here as per game design
+    // Since finishLine is fixed relative to Scarfy, no need to update it here
+    // Function can be left empty or used for additional logic if needed
 }
 
 // Draw Game Objects
@@ -108,6 +105,7 @@ void DrawGame(const GameAssets& assets, const AnimData& scarfyData, const AnimDa
         // Draw Scarfy
         DrawTextureRec(assets.scarfy.get(), scarfyData.rec, scarfyData.pos, WHITE);
     }
+
     else {
         // Draw Game Over Message
         const char* gameOverText = "Game Over!";
